@@ -1,0 +1,125 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     pimpleFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         6;
+
+deltaT          0.002;
+
+writeControl    runTime;
+
+writeInterval   1;
+
+writeFormat     ascii;
+
+writePrecision  12;
+
+writeCompression compressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+adjustTimeStep  false;
+
+maxCo           0.9;
+
+libs
+(
+    "libturbinesFoam.so"
+);
+
+functions
+{
+    turbulenceFields
+    {
+        type            turbulenceFields;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+        writeControl    outputTime;
+        fields          (k);
+        enabled         true;
+    }
+
+    fieldAverage
+    {
+        type            fieldAverage;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+        enabled         true;
+        timeStart       3.0;
+        writeControl    outputTime;
+        resetOnRestart  true;
+        resetOnOutput   false;
+
+        fields
+        (
+            U
+            {
+                mean        on;
+                prime2Mean  on;
+                base        time;
+            }
+
+            p
+            {
+                mean        on;
+                prime2Mean  off;
+                base        time;
+            }
+
+            nut
+            {
+                mean        on;
+                prime2Mean  off;
+                base        time;
+            }
+
+            k
+            {
+                mean        on;
+                prime2Mean  off;
+                base        time;
+            }
+
+            turbulenceProperties:k
+            {
+                mean        on;
+                prime2Mean  off;
+                base        time;
+            }
+        );
+    }
+}
+
+DebugSwitches
+{
+    crossFlowTurbineALSource 0;
+    actuatorLineSource 0;
+    actuatorLineElement 0;
+    LeishmanBeddoes 0;
+    LeishmanBeddoes3G $LeishmanBeddoes;
+    LeishmanBeddoes3 $LeishmanBeddoes;
+}
+
+// ************************************************************************* //
